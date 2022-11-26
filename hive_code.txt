@@ -1,0 +1,36 @@
+hive
+to view the all the databases
+show databases;
+to creat a database
+create database if not exists A;
+to manipulate the database we should get into it ,for it we'll should use this query
+Use A;
+Check location from hdfs
+hadoop fs -ls /user/hive/warehouse
+Managed tables
+create table if not exists emp(empno int, ename string, sal float, comm float, dpno int) row format delimited fields terminated by ',’;
+To get the structure of the tables
+describe emp;
+To load the data from a file into the table
+load data local inpath '/home/cloudera/Desktop/emp.csv' into table emp;
+To view all the content in the table
+Select * from emp;
+To add External Tables
+create external table  ext_emp1(empno int, ename string, sal float, comm float, dpno int) row format delimited fields terminated by ',’ location '/user/cloudera/data/emp’;
+While giving path we have to give only directory path not file name
+Here, table will be in given hdfs path.
+
+create external table  ext_emp2(empno int, ename string, sal float, comm float, dpno int) row format delimited fields terminated by ‘,’;
+Table will be stored under /user/hive/warehouse/A.db/ext_emp2/emp
+
+load data local inpath '/home/cloudera/Desktop/empdata' into table ext_emp2;
+set hive.exec.dynamic.partition.mode;
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+create external table emp_dept (empno int, ename string, sal float, comm float) partitioned by (dpno int) row format delimited fields terminated by ',’;
+insert into table emp_dept partition(dpno) select * from emp;
+
+Check
+hadoop fs -ls /user/hive/warehouse/A.db
+create table dept_buckk(empno int, ename string, sal float, comm float, dpno int)  clustered by (dpno) into 3 buckets row format delimited fields terminated by ‘,’;
+set hive.enforce.bucketing = true;
